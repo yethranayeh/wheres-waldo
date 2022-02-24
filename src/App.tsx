@@ -16,25 +16,9 @@ import {
 } from "@mantine/core";
 import { useLocalStorageValue } from "@mantine/hooks";
 import { db, auth } from "./FirebaseConfig";
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { signInAnonymously } from "firebase/auth";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
-
-// onAuthStateChanged(auth, (user) => {
-// 	console.log("state change is being watched");
-// 	if (user) {
-// 		// User is signed in, see docs for a list of available properties
-// 		// https://firebase.google.com/docs/reference/js/firebase.User
-// 		const uid = user.uid;
-// 		console.info("User:", user);
-// 		console.info("User ID:", uid);
-// 		// ...
-// 	} else {
-// 		// User is signed out
-// 		// ...
-// 		console.log("User is signed out");
-// 	}
-// });
 
 function App() {
 	const [colorScheme, setColorScheme] = useLocalStorageValue({
