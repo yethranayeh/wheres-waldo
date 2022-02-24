@@ -1,6 +1,6 @@
 /** @format */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	ColorSchemeProvider,
 	MantineProvider,
@@ -14,7 +14,25 @@ import {
 	Title
 } from "@mantine/core";
 import { useLocalStorageValue } from "@mantine/hooks";
+import { db, auth } from "./FirebaseConfig";
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import ThemeButton from "./components/ThemeButton";
+
+// onAuthStateChanged(auth, (user) => {
+// 	console.log("state change is being watched");
+// 	if (user) {
+// 		// User is signed in, see docs for a list of available properties
+// 		// https://firebase.google.com/docs/reference/js/firebase.User
+// 		const uid = user.uid;
+// 		console.info("User:", user);
+// 		console.info("User ID:", uid);
+// 		// ...
+// 	} else {
+// 		// User is signed out
+// 		// ...
+// 		console.log("User is signed out");
+// 	}
+// });
 
 function App() {
 	const [colorScheme, setColorScheme] = useLocalStorageValue({
@@ -23,6 +41,26 @@ function App() {
 	});
 	const toggleColorScheme = (value: any) => setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 	const [opened, setOpened] = useState(false);
+	const [user, setUser] = useState(null as null | string);
+
+	useEffect(() => {
+		let isSubscribed = true;
+		async function signIn() {
+			try {
+				const { user } = await signInAnonymously(auth);
+				if (isSubscribed) {
+					setUser(user.uid);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		signIn();
+		return () => {
+			isSubscribed = false;
+		};
+	}, []);
+
 	return (
 		<ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
 			<MantineProvider theme={{ colorScheme }}>
@@ -51,7 +89,21 @@ function App() {
 									<Text>Images</Text>
 								</Navbar.Section>
 								<Navbar.Section>
+									{user && (
+										<Text
+											color='dimmed'
+											style={{
+												display: "flex",
+												justifyContent: "center",
+												alignItems: "baseline",
+												gap: "5px",
+												fontSize: "0.8rem"
+											}}>
+											Guest: {user}
+										</Text>
+									)}
 									<Text
+										mt='sm'
 										style={{
 											display: "flex",
 											justifyContent: "center",
