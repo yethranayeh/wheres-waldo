@@ -167,7 +167,7 @@ function App() {
 								</div>
 							</Header>
 						}>
-						<ScrollArea className='mantine-anwwom' type='always' offsetScrollbars scrollbarSize={24}>
+						<ScrollArea type='always' offsetScrollbars scrollbarSize={24}>
 							<div
 								className='App'
 								style={{
