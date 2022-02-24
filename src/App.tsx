@@ -19,6 +19,7 @@ import { db, auth } from "./FirebaseConfig";
 import { signInAnonymously } from "firebase/auth";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
+import Card from "./components/Card";
 
 function App() {
 	const [colorScheme, setColorScheme] = useLocalStorageValue({
@@ -69,11 +70,11 @@ function App() {
 								// viewport size > theme.breakpoints.lg – width is 400px
 								width={{ sm: 300, lg: 400 }}>
 								<Navbar.Section>
-									<Title order={2}>What to Find:</Title>
+									<Title order={2}>Who to Find:</Title>
 								</Navbar.Section>
 								<Navbar.Section grow mt={"lg"}>
-									<Text>Images</Text>
-									<Text></Text>
+									<Card title='Waldo' alt='Waldo' imgSrc='/src/images/avt_waldo.png' />
+									<Card title='Wizard Whitebeard' alt='Wizard Whitebeard' imgSrc='/src/images/avt_wizard.png' />
 								</Navbar.Section>
 								<Navbar.Section>
 									{user && (
