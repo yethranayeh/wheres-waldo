@@ -55,9 +55,24 @@ function App() {
 										style={{
 											display: "flex",
 											justifyContent: "center",
-											alignItems: "center"
+											alignItems: "baseline",
+											gap: "5px"
 										}}>
-										Made with ❤ for The Odin Project
+										<Text inherit component='span' align='center'>
+											Made with ❤ for
+										</Text>{" "}
+										<Text
+											inherit
+											component='a'
+											href='https://www.theodinproject.com'
+											align='center'
+											variant='gradient'
+											gradient={{ from: "yellow", to: "orange", deg: 70 }}
+											size='xl'
+											weight={700}
+											style={{ fontFamily: "Greycliff CF, sans-serif" }}>
+											The Odin Project
+										</Text>
 									</Text>
 								</Navbar.Section>
 							</Navbar>
