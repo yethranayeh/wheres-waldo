@@ -10,6 +10,7 @@ import {
 	MediaQuery,
 	Navbar,
 	Paper,
+	ScrollArea,
 	Text,
 	Title
 } from "@mantine/core";
@@ -17,6 +18,7 @@ import { useLocalStorageValue } from "@mantine/hooks";
 import { db, auth } from "./FirebaseConfig";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import ThemeButton from "./components/ThemeButton";
+import Image from "./components/Image";
 
 // onAuthStateChanged(auth, (user) => {
 // 	console.log("state change is being watched");
@@ -87,6 +89,7 @@ function App() {
 								</Navbar.Section>
 								<Navbar.Section grow mt={"lg"}>
 									<Text>Images</Text>
+									<Text></Text>
 								</Navbar.Section>
 								<Navbar.Section>
 									{user && (
@@ -164,9 +167,15 @@ function App() {
 								</div>
 							</Header>
 						}>
-						<div className='App'>
-							<h2>App</h2>
-						</div>
+						<ScrollArea className='mantine-anwwom' type='always' offsetScrollbars scrollbarSize={24}>
+							<div
+								className='App'
+								style={{
+									width: "1920px"
+								}}>
+								<Image />
+							</div>
+						</ScrollArea>
 					</AppShell>
 				</Paper>
 			</MantineProvider>
