@@ -1,0 +1,14 @@
+{
+	"name": "Where's Waldo?",
+	"short_name": "Where's Waldo?",
+	"icons": [
+		{
+			"src": "/src/android-chrome-96x96.png",
+			"sizes": "96x96",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
+	"display": "standalone"
+}
