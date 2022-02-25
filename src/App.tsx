@@ -138,7 +138,9 @@ function MyApp() {
 
 	useEffect(() => {
 		if (foundWaldo && foundWizard) {
-			setGameOver(true);
+			setTimeout(() => {
+				setGameOver(true);
+			}, 5000);
 			notifications.showNotification({
 				title: "Congratulations!",
 				message: `You found all the characters in ${timer} seconds!`,
