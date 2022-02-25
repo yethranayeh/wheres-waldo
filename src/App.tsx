@@ -329,22 +329,26 @@ function MyApp() {
 							}}>
 							<Menu
 								control={
-									<div
-										style={{
-											boxSizing: "border-box",
-											opacity: menuOpened ? "0" : "1",
-											position: "absolute",
-											top: `${mouseY - 35}px`,
-											left: `${mouseX - 35}px`,
-											zIndex: "99",
-											width: "60px",
-											height: "60px",
-											background: "transparent",
-											border: "5px solid #fefefe",
-											borderRadius: "10px",
-											boxShadow: "0 0 5px 2px #333, 0 0 5px 1px #333 inset",
-											transition: "opacity 250ms ease-out"
-										}}></div>
+									gameStarted ? (
+										<div
+											style={{
+												boxSizing: "border-box",
+												opacity: menuOpened ? "0" : "1",
+												position: "absolute",
+												top: `${mouseY - 35}px`,
+												left: `${mouseX - 35}px`,
+												zIndex: "99",
+												width: "60px",
+												height: "60px",
+												background: "transparent",
+												border: "5px solid #fefefe",
+												borderRadius: "10px",
+												boxShadow: "0 0 5px 2px #333, 0 0 5px 1px #333 inset",
+												transition: "opacity 250ms ease-out"
+											}}></div>
+									) : (
+										<div></div>
+									)
 								}
 								placement='center'
 								opened={menuOpened}
