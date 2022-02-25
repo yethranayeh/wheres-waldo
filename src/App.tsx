@@ -28,6 +28,8 @@ import { VscError } from "react-icons/vsc";
 import { TiTick } from "react-icons/ti";
 import { GiPartyPopper } from "react-icons/gi";
 import { BsGithub } from "react-icons/bs";
+import WaldoImg from "./images/avt_waldo.png";
+import WizardImg from "./images/avt_wizard.png";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
 import Card from "./components/Card";
@@ -177,13 +179,8 @@ function MyApp() {
 						</Navbar.Section>
 						{(!foundWaldo || !foundWizard) && (
 							<Navbar.Section grow mt={"lg"}>
-								<Card title='Waldo' alt='Waldo' imgSrc='/src/images/avt_waldo.png' disabled={foundWaldo} />
-								<Card
-									title='Wizard Whitebeard'
-									alt='Wizard Whitebeard'
-									imgSrc='/src/images/avt_wizard.png'
-									disabled={foundWizard}
-								/>
+								<Card title='Waldo' alt='Waldo' image={true} disabled={foundWaldo} />
+								<Card title='Wizard Whitebeard' alt='Wizard Whitebeard' image={true} disabled={foundWizard} />
 							</Navbar.Section>
 						)}
 						{foundWaldo && foundWizard && (
@@ -191,7 +188,6 @@ function MyApp() {
 								<Card
 									title='Congratulations!'
 									alt='You have found all the characters!'
-									imgSrc={""}
 									icon={
 										<TiTick
 											style={{
@@ -368,10 +364,10 @@ function MyApp() {
 								transition='scale'
 								transitionDuration={250}
 								transitionTimingFunction='ease-out'>
-								<Menu.Item icon={<Avatar src='/src/images/avt_waldo.png' />} onClick={() => handleMenuClick("waldo")}>
+								<Menu.Item icon={<Avatar src={WaldoImg} />} onClick={() => handleMenuClick("waldo")}>
 									<Title order={4}>Waldo</Title>
 								</Menu.Item>
-								<Menu.Item icon={<Avatar src='/src/images/avt_wizard.png' />} onClick={() => handleMenuClick("wizard")}>
+								<Menu.Item icon={<Avatar src={WizardImg} />} onClick={() => handleMenuClick("wizard")}>
 									<Title order={4}>Wizard Whitebeard</Title>
 								</Menu.Item>
 							</Menu>

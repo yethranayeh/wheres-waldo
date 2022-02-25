@@ -1,6 +1,8 @@
 /** @format */
 
 import { Avatar, Title, Text, createStyles } from "@mantine/core";
+import WaldoImg from "../images/avt_waldo.png";
+import WizardImg from "../images/avt_wizard.png";
 
 const useStyles = createStyles((theme, _params, getRef) => {
 	const child = getRef("child");
@@ -41,14 +43,14 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 type Props = {
-	imgSrc: string;
+	image?: boolean;
 	alt: string;
 	title: string;
 	disabled: boolean;
 	icon?: React.ReactNode;
 };
 
-export default function Card({ imgSrc, alt, title, disabled, icon }: Props) {
+export default function Card({ image, alt, title, disabled, icon }: Props) {
 	const { classes } = useStyles();
 	return (
 		<div
@@ -57,7 +59,15 @@ export default function Card({ imgSrc, alt, title, disabled, icon }: Props) {
 				opacity: disabled ? 0.3 : 1,
 				cursor: disabled ? "not-allowed" : "pointer"
 			}}>
-			{imgSrc && <Avatar className={classes.child} radius='xs' size='xl' src={imgSrc} alt={alt} />}
+			{image && (
+				<Avatar
+					className={classes.child}
+					radius='xs'
+					size='xl'
+					src={title === "Waldo" ? WaldoImg : WizardImg}
+					alt={alt}
+				/>
+			)}
 			{icon && icon}
 			<div>
 				<Title order={3}>{title}</Title>
