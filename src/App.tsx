@@ -154,7 +154,7 @@ function MyApp() {
 						<Navbar.Section>
 							<Title order={2}>Who to Find:</Title>
 						</Navbar.Section>
-						{!foundWaldo && !foundWizard && (
+						{(!foundWaldo || !foundWizard) && (
 							<Navbar.Section grow mt={"lg"}>
 								<Card title='Waldo' alt='Waldo' imgSrc='/src/images/avt_waldo.png' disabled={foundWaldo} />
 								<Card
