@@ -16,7 +16,8 @@ import {
 	Code,
 	Menu,
 	Avatar,
-	Button
+	Button,
+	ActionIcon
 } from "@mantine/core";
 import { useLocalStorageValue, useMouse } from "@mantine/hooks";
 import { NotificationsProvider, useNotifications } from "@mantine/notifications";
@@ -26,6 +27,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { VscError } from "react-icons/vsc";
 import { TiTick } from "react-icons/ti";
 import { GiPartyPopper } from "react-icons/gi";
+import { BsGithub } from "react-icons/bs";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
 import Card from "./components/Card";
@@ -287,7 +289,16 @@ function MyApp() {
 									Waldo?
 								</Text>
 							</Title>
-							<ThemeButton />
+							<div
+								style={{
+									display: "flex",
+									gap: "10px"
+								}}>
+								<ActionIcon component='a' href='https://github.com/yethranayeh/' target='_blank' variant='outline'>
+									<BsGithub />
+								</ActionIcon>
+								<ThemeButton />
+							</div>
 						</div>
 					</Header>
 				}>
