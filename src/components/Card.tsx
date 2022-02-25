@@ -1,7 +1,6 @@
 /** @format */
 
 import { Avatar, Title, createStyles } from "@mantine/core";
-import {} from "@mantine/core";
 
 const useStyles = createStyles((theme, _params, getRef) => {
 	const child = getRef("child");
@@ -45,12 +44,18 @@ type Props = {
 	imgSrc: string;
 	alt: string;
 	title: string;
+	isFound: boolean;
 };
 
-export default function Card({ imgSrc, alt, title }: Props) {
+export default function Card({ imgSrc, alt, title, isFound }: Props) {
 	const { classes } = useStyles();
 	return (
-		<div className={classes.wrapper}>
+		<div
+			className={classes.wrapper}
+			style={{
+				opacity: isFound ? 0.3 : 1,
+				cursor: isFound ? "not-allowed" : "pointer"
+			}}>
 			<Avatar className={classes.child} radius='xs' size='xl' src={imgSrc} alt={alt} />
 			<Title order={3}>{title}</Title>
 		</div>

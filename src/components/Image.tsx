@@ -11,8 +11,7 @@ export default function Image() {
 		async function fetchImage() {
 			try {
 				const response = await fetch("/src/images/waldo.webp");
-				if (subscribed && response.ok) {
-					console.log("response:", response);
+				if (subscribed && response.status === 200) {
 					setImgSrc(response.url);
 				} else {
 					throw new Error("Failed to fetch image");

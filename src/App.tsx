@@ -1,6 +1,6 @@
 /** @format */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
 	ColorSchemeProvider,
 	MantineProvider,
@@ -12,14 +12,25 @@ import {
 	Paper,
 	ScrollArea,
 	Text,
-	Title
+	Title,
+	Code,
+	Menu,
+	Avatar
 } from "@mantine/core";
-import { useLocalStorageValue } from "@mantine/hooks";
+import { useLocalStorageValue, useMouse } from "@mantine/hooks";
 import { db, auth } from "./FirebaseConfig";
 import { signInAnonymously } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
 import Card from "./components/Card";
+
+type Bounds = {
+	xStart: number;
+	xEnd: number;
+	yStart: number;
+	yEnd: number;
+};
 
 function App() {
 	const [colorScheme, setColorScheme] = useLocalStorageValue({
@@ -27,8 +38,48 @@ function App() {
 		defaultValue: "dark"
 	});
 	const toggleColorScheme = (value: any) => setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
-	const [opened, setOpened] = useState(false);
 	const [user, setUser] = useState(null as null | string);
+	const [navbarOpened, setNavbarOpened] = useState(false);
+	const [menuOpened, setMenuOpened] = useState(false);
+	const [foundWaldo, setFoundWaldo] = useState(false);
+	const [foundWizard, setFoundWizard] = useState(false);
+
+	// Track mouse movement
+	const { ref: mouseRef, x: mouseX, y: mouseY } = useMouse();
+	const mouseLocRef = useRef({ x: 0, y: 0 });
+
+	async function handleMenuClick(character: string) {
+		const mX = mouseLocRef.current.x;
+		const mY = mouseLocRef.current.y;
+		try {
+			const bounds = await getCharacterBounds(character);
+			const withinBounds = isWithinBounds(mX, mY, bounds);
+			if (withinBounds) {
+				if (character === "waldo") {
+					setFoundWaldo(true);
+				} else {
+					setFoundWizard(true);
+				}
+			}
+		} catch (error) {
+			throw new Error(error as any);
+		}
+	}
+
+	async function getCharacterBounds(character: string) {
+		try {
+			const characterRef = doc(db, "locations", character);
+			const docSnap = await getDoc(characterRef);
+			const data = docSnap.data() as Bounds;
+			return { xStart: data.xStart, xEnd: data.xEnd, yStart: data.yStart, yEnd: data.yEnd };
+		} catch (error) {
+			throw new Error(error as any);
+		}
+	}
+
+	function isWithinBounds(x: number, y: number, bounds: Bounds) {
+		return x >= bounds.xStart && x <= bounds.xEnd && y >= bounds.yStart && y <= bounds.yEnd;
+	}
 
 	useEffect(() => {
 		let isSubscribed = true;
@@ -39,7 +90,7 @@ function App() {
 					setUser(user.uid);
 				}
 			} catch (error) {
-				console.error(error);
+				console.error(error, "\nYou may be offline. Please check your internet connection.");
 			}
 		}
 		signIn();
@@ -64,7 +115,7 @@ function App() {
 								// Breakpoint at which navbar will be hidden if hidden prop is true
 								hiddenBreakpoint='sm'
 								// Hides navbar when viewport size is less than value specified in hiddenBreakpoint
-								hidden={!opened}
+								hidden={!navbarOpened}
 								// when viewport size is less than theme.breakpoints.sm navbar width is 100%
 								// viewport size > theme.breakpoints.sm – width is 300px
 								// viewport size > theme.breakpoints.lg – width is 400px
@@ -73,10 +124,26 @@ function App() {
 									<Title order={2}>Who to Find:</Title>
 								</Navbar.Section>
 								<Navbar.Section grow mt={"lg"}>
-									<Card title='Waldo' alt='Waldo' imgSrc='/src/images/avt_waldo.png' />
-									<Card title='Wizard Whitebeard' alt='Wizard Whitebeard' imgSrc='/src/images/avt_wizard.png' />
+									<Card title='Waldo' alt='Waldo' imgSrc='/src/images/avt_waldo.png' isFound={foundWaldo} />
+									<Card
+										title='Wizard Whitebeard'
+										alt='Wizard Whitebeard'
+										imgSrc='/src/images/avt_wizard.png'
+										isFound={foundWizard}
+									/>
 								</Navbar.Section>
 								<Navbar.Section>
+									<Text
+										color='dimmed'
+										style={{
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "baseline",
+											gap: "5px",
+											fontSize: "0.8rem"
+										}}>
+										Mouse coordinates <Code>{`{ x: ${mouseX}, y: ${mouseY} }`}</Code>
+									</Text>
 									{user && (
 										<Text
 											color='dimmed'
@@ -122,7 +189,7 @@ function App() {
 								{/* Handle other responsive styles with MediaQuery component or createStyles function */}
 								<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "100%" }}>
 									<MediaQuery largerThan='sm' styles={{ display: "none" }}>
-										<Burger opened={opened} onClick={() => setOpened((o) => !o)} size='sm' />
+										<Burger opened={navbarOpened} onClick={() => setNavbarOpened((o) => !o)} size='sm' />
 									</MediaQuery>
 
 									<Title
@@ -143,8 +210,7 @@ function App() {
 											variant='gradient'
 											gradient={{ from: "red", to: "grape", deg: 45 }}
 											size='xl'
-											weight={700}
-											style={{ fontFamily: "Greycliff CF, sans-serif" }}>
+											weight={700}>
 											Waldo?
 										</Text>
 									</Title>
@@ -154,10 +220,53 @@ function App() {
 						}>
 						<ScrollArea type='always' offsetScrollbars scrollbarSize={24}>
 							<div
+								ref={mouseRef}
 								className='App'
 								style={{
 									width: "1920px"
+								}}
+								onClick={(e) => {
+									setMenuOpened(!menuOpened);
+									if (!menuOpened) {
+										// Only changes the mouse position if the menu is closed to prevent the mouse position from jumping to menu element location after clicking on the menu
+										mouseLocRef.current = { x: mouseX, y: mouseY };
+									}
 								}}>
+								<Menu
+									control={
+										<div
+											style={{
+												boxSizing: "border-box",
+												opacity: menuOpened ? "0" : "1",
+												position: "absolute",
+												top: `${mouseY - 35}px`,
+												left: `${mouseX - 35}px`,
+												zIndex: "99",
+												width: "60px",
+												height: "60px",
+												background: "transparent",
+												border: "5px solid #fefefe",
+												borderRadius: "10px",
+												boxShadow: "2px 2px 5px 3px #333"
+											}}></div>
+									}
+									placement='center'
+									opened={menuOpened}
+									onOpen={() => setMenuOpened(true)}
+									onClose={() => setMenuOpened(false)}
+									transition='scale'
+									transitionDuration={250}
+									exitTransitionDuration={100}
+									transitionTimingFunction='ease-out'>
+									<Menu.Item icon={<Avatar src='/src/images/avt_waldo.png' />} onClick={() => handleMenuClick("waldo")}>
+										<Title order={4}>Waldo</Title>
+									</Menu.Item>
+									<Menu.Item
+										icon={<Avatar src='/src/images/avt_wizard.png' />}
+										onClick={() => handleMenuClick("wizard")}>
+										<Title order={4}>Wizard Whitebeard</Title>
+									</Menu.Item>
+								</Menu>
 								<Image />
 							</div>
 						</ScrollArea>
