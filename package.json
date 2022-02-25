@@ -1,7 +1,7 @@
 {
 	"name": "wheres-waldo",
 	"private": true,
-	"homepage": ".",
+	"homepage": "https://yethranayeh.github.io/wheres-waldo",
 	"version": "0.0.0",
 	"scripts": {
 		"dev": "vite",
