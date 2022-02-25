@@ -15,7 +15,8 @@ import {
 	Title,
 	Code,
 	Menu,
-	Avatar
+	Avatar,
+	Button
 } from "@mantine/core";
 import { useLocalStorageValue, useMouse } from "@mantine/hooks";
 import { NotificationsProvider, useNotifications } from "@mantine/notifications";
@@ -24,6 +25,7 @@ import { signInAnonymously } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { VscError } from "react-icons/vsc";
 import { TiTick } from "react-icons/ti";
+import { GiPartyPopper } from "react-icons/gi";
 import ThemeButton from "./components/ThemeButton";
 import Image from "./components/Image";
 import Card from "./components/Card";
@@ -42,7 +44,6 @@ export default function App() {
 	});
 	const toggleColorScheme = (value: any) => setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
-	function themeHandler() {}
 	return (
 		<ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
 			<MantineProvider theme={{ colorScheme }}>
@@ -57,10 +58,13 @@ export default function App() {
 function MyApp() {
 	const notifications = useNotifications();
 	const [user, setUser] = useState(null as null | string);
+	const [gameStarted, setGameStarted] = useState(false);
+	const [gameOver, setGameOver] = useState(false);
 	const [navbarOpened, setNavbarOpened] = useState(false);
 	const [menuOpened, setMenuOpened] = useState(false);
 	const [foundWaldo, setFoundWaldo] = useState(false);
 	const [foundWizard, setFoundWizard] = useState(false);
+	const [timer, setTimer] = useState(0);
 
 	// Track mouse movement
 	const { ref: mouseRef, x: mouseX, y: mouseY } = useMouse();
@@ -132,6 +136,19 @@ function MyApp() {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (foundWaldo && foundWizard) {
+			setGameOver(true);
+			notifications.showNotification({
+				title: "Congratulations!",
+				message: `You found all the characters in ${timer} seconds!`,
+				color: "teal",
+				autoClose: 5000,
+				icon: <GiPartyPopper />
+			});
+		}
+	}, [foundWaldo, foundWizard]);
+
 	return (
 		<Paper>
 			<AppShell
@@ -187,6 +204,18 @@ function MyApp() {
 							</Navbar.Section>
 						)}
 						<Navbar.Section>
+							<Text
+								size='xl'
+								style={{
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "baseline",
+									gap: "5px",
+									margin: "16px"
+								}}>
+								Time: {gameStarted ? timer : "00:00:00"}
+							</Text>
+
 							{user && (
 								<Text
 									color='dimmed'
@@ -219,8 +248,7 @@ function MyApp() {
 									variant='gradient'
 									gradient={{ from: "yellow", to: "orange", deg: 70 }}
 									size='xl'
-									weight={700}
-									style={{ fontFamily: "Greycliff CF, sans-serif" }}>
+									weight={700}>
 									The Odin Project
 								</Text>
 							</Text>
@@ -261,56 +289,99 @@ function MyApp() {
 						</div>
 					</Header>
 				}>
-				<ScrollArea type='always' offsetScrollbars scrollbarSize={24}>
+				{!gameStarted && (
 					<div
-						ref={mouseRef}
-						className='App'
 						style={{
-							width: "1920px"
-						}}
-						onClick={(e) => {
-							setMenuOpened(!menuOpened);
-							if (!menuOpened) {
-								// Only changes the mouse position if the menu is closed to prevent the mouse position from jumping to menu element location after clicking on the menu
-								mouseLocRef.current = { x: mouseX, y: mouseY };
-							}
+							width: "100%",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center"
 						}}>
-						<Menu
-							control={
-								<div
-									style={{
-										boxSizing: "border-box",
-										opacity: menuOpened ? "0" : "1",
-										position: "absolute",
-										top: `${mouseY - 35}px`,
-										left: `${mouseX - 35}px`,
-										zIndex: "99",
-										width: "60px",
-										height: "60px",
-										background: "transparent",
-										border: "5px solid #fefefe",
-										borderRadius: "10px",
-										boxShadow: "0 0 5px 2px #333, 0 0 5px 1px #333 inset",
-										transition: "opacity 250ms ease-out"
-									}}></div>
-							}
-							placement='center'
-							opened={menuOpened}
-							onOpen={() => setMenuOpened(true)}
-							onClose={() => setMenuOpened(false)}
-							transition='scale'
-							transitionDuration={250}
-							transitionTimingFunction='ease-out'>
-							<Menu.Item icon={<Avatar src='/src/images/avt_waldo.png' />} onClick={() => handleMenuClick("waldo")}>
-								<Title order={4}>Waldo</Title>
-							</Menu.Item>
-							<Menu.Item icon={<Avatar src='/src/images/avt_wizard.png' />} onClick={() => handleMenuClick("wizard")}>
-								<Title order={4}>Wizard Whitebeard</Title>
-							</Menu.Item>
-						</Menu>
-						<Image />
+						<Button
+							size='lg'
+							uppercase
+							variant='gradient'
+							gradient={{ from: "teal", to: "lime", deg: 105 }}
+							onClick={() => {
+								setGameStarted(true);
+							}}>
+							Start
+						</Button>
 					</div>
-				</ScrollArea>
+				)}
+				{!gameOver ? (
+					<ScrollArea type='always' offsetScrollbars scrollbarSize={24}>
+						<div
+							ref={mouseRef}
+							className='App'
+							style={{
+								width: "1920px",
+								pointerEvents: gameStarted ? "auto" : "none"
+							}}
+							onClick={(e) => {
+								setMenuOpened(!menuOpened);
+								if (!menuOpened) {
+									// Only changes the mouse position if the menu is closed to prevent the mouse position from jumping to menu element location after clicking on the menu
+									mouseLocRef.current = { x: mouseX, y: mouseY };
+								}
+							}}>
+							<Menu
+								control={
+									<div
+										style={{
+											boxSizing: "border-box",
+											opacity: menuOpened ? "0" : "1",
+											position: "absolute",
+											top: `${mouseY - 35}px`,
+											left: `${mouseX - 35}px`,
+											zIndex: "99",
+											width: "60px",
+											height: "60px",
+											background: "transparent",
+											border: "5px solid #fefefe",
+											borderRadius: "10px",
+											boxShadow: "0 0 5px 2px #333, 0 0 5px 1px #333 inset",
+											transition: "opacity 250ms ease-out"
+										}}></div>
+								}
+								placement='center'
+								opened={menuOpened}
+								onOpen={() => setMenuOpened(true)}
+								onClose={() => setMenuOpened(false)}
+								transition='scale'
+								transitionDuration={250}
+								transitionTimingFunction='ease-out'>
+								<Menu.Item icon={<Avatar src='/src/images/avt_waldo.png' />} onClick={() => handleMenuClick("waldo")}>
+									<Title order={4}>Waldo</Title>
+								</Menu.Item>
+								<Menu.Item icon={<Avatar src='/src/images/avt_wizard.png' />} onClick={() => handleMenuClick("wizard")}>
+									<Title order={4}>Wizard Whitebeard</Title>
+								</Menu.Item>
+							</Menu>
+							<Image />
+						</div>
+					</ScrollArea>
+				) : (
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							height: "100vh",
+							overflow: "hidden"
+						}}>
+						<Button
+							variant='gradient'
+							gradient={{ from: "teal", to: "blue", deg: 60 }}
+							size='xl'
+							uppercase
+							onClick={() => {
+								location.reload();
+							}}>
+							Restart
+						</Button>
+					</div>
+				)}
 			</AppShell>
 		</Paper>
 	);
