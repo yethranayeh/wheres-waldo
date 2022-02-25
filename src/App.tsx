@@ -290,7 +290,8 @@ function MyApp() {
 										background: "transparent",
 										border: "5px solid #fefefe",
 										borderRadius: "10px",
-										boxShadow: "2px 2px 5px 3px #333"
+										boxShadow: "0 0 5px 2px #333, 0 0 5px 1px #333 inset",
+										transition: "opacity 250ms ease-out"
 									}}></div>
 							}
 							placement='center'
